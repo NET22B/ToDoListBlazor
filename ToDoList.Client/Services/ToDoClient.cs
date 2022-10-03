@@ -26,7 +26,8 @@ namespace ToDoList.Client.Services
                 },
                 new Item()
                 {
-                    Text = "Bröd"
+                    Text = "Bröd",
+                    Completed = true
                 },
                 new Item()
                 {
