@@ -1,18 +1,19 @@
 ﻿<div class="border-bottom bg-white">
-    <form id="todoForm" class="py-4 container">
+    <EditForm Model="@Model" id="todoForm" class="py-4 container">
         <div class="input-group input-group-lg">
-            <input @bind="text" type="text" class="form-control" placeholder="Add todo..." autofocus>
+            <InputText @bind-Value="text" type="text" class="form-control" placeholder="Add todo..." autofocus></InputText>
             <div class="input-group-append input-group-lg">
                 <button @onclick="OnAdd" @onclick:preventDefault="true" type="submit" class="btn btn-info">ADD</button>
             </div>
         </div>
-    </form>
+    </EditForm>
 </div>
 
 
 @code {
 
     private string text = string.Empty;
+    private string Model = string.Empty;
 
     [Parameter]
     public EventCallback<string> Add { get; set; }
