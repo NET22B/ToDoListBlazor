@@ -4,6 +4,6 @@ namespace ToDoList.Client.Services
 {
     public interface IToDoClient
     {
-        Task<IEnumerable<Item>> GetAsync();
+        Task<IEnumerable<Item>?> GetAsync();
     }
 }

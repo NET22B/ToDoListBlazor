@@ -1,4 +1,5 @@
-﻿using ToDoList.Shared;
+﻿using System.Net.Http.Json;
+using ToDoList.Shared;
 
 namespace ToDoList.Client.Services
 {
@@ -12,28 +13,9 @@ namespace ToDoList.Client.Services
             // this.httpClient.BaseAddress
         }
 
-        public async Task<IEnumerable<Item>> GetAsync()
+        public async Task<IEnumerable<Item>?> GetAsync()
         {
-            return new List<Item>()
-            {
-                new Item()
-                {
-                    Text = "Banan"
-                },
-                new Item()
-                {
-                    Text = "Apelsin"
-                },
-                new Item()
-                {
-                    Text = "Bröd",
-                    Completed = true
-                },
-                new Item()
-                {
-                    Text = "Mjölk"
-                }
-            };
+            return await httpClient.GetFromJsonAsync<IEnumerable<Item>>("api/todo");
         }
     }
 }
