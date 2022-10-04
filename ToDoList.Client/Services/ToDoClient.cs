@@ -16,6 +16,16 @@ namespace ToDoList.Client.Services
         public async Task<IEnumerable<Item>?> GetAsync()
         {
             return await httpClient.GetFromJsonAsync<IEnumerable<Item>>("api/todo");
+        }  
+        
+        public async Task<Item?> PostAsync(CreateItem createItem)
+        {
+            var response =  await httpClient.PostAsJsonAsync<CreateItem>("api/todo", createItem);
+
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<Item>();
+
+            return null;
         }
     }
 }

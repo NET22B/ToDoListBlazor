@@ -21,10 +21,12 @@
     }
 
     private async Task AddItem(string text){
-        var newItem = new Item { Text = text };
+        var newItem = new CreateItem { Text = text };
 
-        items.Add(newItem);
-        //do something
+        var createdItem = await ToDoClient.PostAsync(newItem);
+
+        if(createdItem != null)
+              items.Add(createdItem);
     }
 
 }

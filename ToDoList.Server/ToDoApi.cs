@@ -35,6 +35,24 @@ namespace ToDoList.Server
             var items = GetItems();
 
             return new OkObjectResult(items);
+        } 
+        
+        [FunctionName("CreateTodos")]
+        public static async Task<IActionResult> Create(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post",  Route = "todo")] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("C# HTTP trigger function processed a request.");
+
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var createItem = JsonConvert.DeserializeObject<CreateItem>(requestBody);
+
+            if (createItem == null || string.IsNullOrWhiteSpace(createItem.Text)) return new BadRequestResult();
+
+            var item = new Item { Text = createItem.Text };
+
+            return new OkObjectResult(item);
         }
 
         private static IEnumerable<Item> GetItems()
