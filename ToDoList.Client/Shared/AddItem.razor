@@ -1,7 +1,7 @@
 ﻿<div class="border-bottom bg-white">
-    <EditForm Model="@Model" id="todoForm" class="py-4 container">
+    <EditForm Model="@createItem" id="todoForm" class="py-4 container">
         <div class="input-group input-group-lg">
-            <InputText @bind-Value="text" type="text" class="form-control" placeholder="Add todo..." autofocus></InputText>
+            <InputText @bind-Value="createItem.Text" type="text" class="form-control" placeholder="Add todo..." autofocus></InputText>
             <div class="input-group-append input-group-lg">
                 <button @onclick="OnAdd" @onclick:preventDefault="true" type="submit" class="btn btn-info">ADD</button>
             </div>
@@ -11,16 +11,16 @@
 
 
 @code {
-
-    private string text = string.Empty;
-    private string Model = string.Empty;
+    //private string text = string.Empty;
+    //private string Model = string.Empty;
+    private CreateItem createItem = new CreateItem();
 
     [Parameter]
-    public EventCallback<string> Add { get; set; }
+    public EventCallback<CreateItem> Add { get; set; }
 
     public async Task OnAdd()
     {
-        await Add.InvokeAsync(text);
-        text = string.Empty;
+        await Add.InvokeAsync(createItem);
+        createItem.Text = string.Empty;
     }
 }

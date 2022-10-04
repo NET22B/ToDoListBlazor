@@ -20,10 +20,10 @@
         items = (await ToDoClient.GetAsync())?.ToList();
     }
 
-    private async Task AddItem(string text){
-        var newItem = new CreateItem { Text = text };
+    private async Task AddItem(CreateItem createItem){
+       // var newItem = new CreateItem { Text = text };
 
-        var createdItem = await ToDoClient.PostAsync(newItem);
+        var createdItem = await ToDoClient.PostAsync(createItem);
 
         if(createdItem != null)
               items.Add(createdItem);
