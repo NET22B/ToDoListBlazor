@@ -3,13 +3,29 @@
         @foreach (var item in ToDoItems)
         {
 
-            <li class="list-group-item @(item.Completed ? "change" : "")">@item.Text<button class="btn btn-danger">X</button></li>
+            <li @onclick="() => ItemCompleted(item)" class="list-group-item @(item.Completed ? "change" : "")">
+                @item.Text
+                <button @onclick="() => Remove(item)" @onclick:stopPropagation="true" class="btn btn-danger">X</button>
+            </li>
         }
     </ul>
 </div>
 
 @code {
     [Parameter]
-    public IEnumerable<Item> ToDoItems { get; set; } = new List<Item>();
+    public List<Item> ToDoItems { get; set; } = new List<Item>();
+
+    private void ItemCompleted(Item item){
+        item.Completed = item.Completed ? false : true;
+
+        //ToDo call api 
+        //Act on success
+    }
+
+    private void Remove(Item item){
+
+        //ToDo call api
+        ToDoItems.Remove(item);
+    }
 
 }
