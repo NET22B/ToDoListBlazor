@@ -1,26 +1,25 @@
 ﻿<div class="border-bottom bg-white">
     <form id="todoForm" class="py-4 container">
         <div class="input-group input-group-lg">
-            <input @oninput="OnTextChanged" value="@Text" type="text" class="form-control" placeholder="Add todo..." autofocus>
+            <input @bind="text" type="text" class="form-control" placeholder="Add todo..." autofocus>
             <div class="input-group-append input-group-lg">
-                <button @onclick:preventDefault="true" type="submit" class="btn btn-info">ADD</button>
+                <button @onclick="OnAdd" @onclick:preventDefault="true" type="submit" class="btn btn-info">ADD</button>
             </div>
         </div>
     </form>
 </div>
 
-<h1>@Text</h1>
-
 
 @code {
-    [Parameter]
-    public string Text { get; set; } = string.Empty;
+
+    private string text = string.Empty;
 
     [Parameter]
-    public EventCallback<string> TextChanged { get; set; }
+    public EventCallback<string> Add { get; set; }
 
-    public async Task OnTextChanged(ChangeEventArgs e){
-        Text = e.Value.ToString();
-        await TextChanged.InvokeAsync(Text);
+    public async Task OnAdd()
+    {
+        await Add.InvokeAsync(text);
+        text = string.Empty;
     }
 }

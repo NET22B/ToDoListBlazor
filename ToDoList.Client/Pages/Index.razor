@@ -1,15 +1,14 @@
 ﻿@page "/"
 
-<h1>@text</h1>
 
 <PageTitle>Index</PageTitle>
 
-<AddItem @bind-Text="text"></AddItem>
+<AddItem Add="AddItem"></AddItem>
 
 <Items ToDoItems="items"></Items>
 
 @code{
-    private string text = "Hej";
+    
 
     private IEnumerable<Item> items = new List<Item>();
 
@@ -19,6 +18,10 @@
     protected override async Task OnInitializedAsync()
     {
         items = await ToDoClient.GetAsync();
+    }
+
+    private async Task AddItem(string text){
+        //do something
     }
 
 }
