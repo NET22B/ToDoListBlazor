@@ -38,7 +38,10 @@ namespace ToDoList.Client.Services
         
         public async Task<bool> EditAsync(Item item)
         {
-            var response = await httpClient.PutAsJsonAsync($"api/todo/{item.Id}", item);
+            //Borde skickats in här istället...
+            var updateItem = new EditItem { Completed = item.Completed };
+
+            var response = await httpClient.PutAsJsonAsync($"api/todo/{item.Id}", updateItem);
 
             return response.IsSuccessStatusCode ? true : false;
         }

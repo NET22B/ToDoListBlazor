@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using ToDoList.Shared;
+using ToDoList.Server.Entitys;
+using ToDoList.Server.Extensions;
 
 namespace ToDoList.Server
 {
@@ -40,6 +42,7 @@ namespace ToDoList.Server
         [FunctionName("CreateTodos")]
         public static async Task<IActionResult> Create(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post",  Route = "todo")] HttpRequest req,
+            [Table("items", Connection = "AzureWebJobsStorage")] IAsyncCollector<ItemTableEntity> itemTable,
             ILogger log)
         {
             log.LogInformation("Create item");
@@ -51,6 +54,8 @@ namespace ToDoList.Server
             if (createItem == null || string.IsNullOrWhiteSpace(createItem.Text)) return new BadRequestResult();
 
             var item = new Item { Text = createItem.Text };
+
+            await itemTable.AddAsync(item.ToTableEntity());
 
             return new OkObjectResult(item);
         } 

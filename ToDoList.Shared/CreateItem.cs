@@ -12,5 +12,10 @@ namespace ToDoList.Shared
         [Required]
         [StringLength(5)]
         public string Text { get; set; } = string.Empty;
+    } 
+    
+    public class EditItem
+    {
+        public bool Completed { get; set; }
     }
 }
