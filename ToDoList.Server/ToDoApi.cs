@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using ToDoList.Shared;
 using ToDoList.Server.Entitys;
 using ToDoList.Server.Extensions;
+using Microsoft.Azure.Cosmos.Table;
+using System.Linq;
 
 namespace ToDoList.Server
 {
@@ -20,23 +22,17 @@ namespace ToDoList.Server
         [FunctionName("GetTodos")]
         public static async Task<IActionResult> Get(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get",  Route = "todo")] HttpRequest req,
+            [Table("items", Connection = "AzureWebJobsStorage")] CloudTable itemTable,
             ILogger log)
         {
             log.LogInformation("Get Item");
 
-            //string name = req.Query["name"];
+            var query = new TableQuery<ItemTableEntity>();
+            var result = await itemTable.ExecuteQuerySegmentedAsync(query, null);
 
-            //string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            //dynamic data = JsonConvert.DeserializeObject(requestBody);
-            //name = name ?? data?.name;
+            var response = result.Select(Mapper.ToItem).ToList();
 
-            //string responseMessage = string.IsNullOrEmpty(name)
-            //    ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-            //    : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            var items = GetItems();
-
-            return new OkObjectResult(items);
+            return new OkObjectResult(response);
         } 
         
         [FunctionName("CreateTodos")]
@@ -82,28 +78,6 @@ namespace ToDoList.Server
             return new NoContentResult();
         }
 
-        private static IEnumerable<Item> GetItems()
-        {
-            return new List<Item>()
-            {
-                new Item()
-                {
-                    Text = "Banan"
-                },
-                new Item()
-                {
-                    Text = "Apelsin"
-                },
-                new Item()
-                {
-                    Text = "Bröd",
-                    Completed = true
-                },
-                new Item()
-                {
-                    Text = "Mjölk"
-                }
-            };
-        }
+      
     }
 }
