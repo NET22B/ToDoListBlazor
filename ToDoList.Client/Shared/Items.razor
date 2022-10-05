@@ -17,12 +17,19 @@
     [Parameter]
     public List<Item> ToDoItems { get; set; } = new List<Item>();
 
-    private void ItemCompleted(Item item)
+    private async void ItemCompleted(Item item)
     {
         item.Completed = item.Completed ? false : true;
 
-        //ToDo call api
-        //Act on success
+        var isCompleted = await ToDoClient.EditAsync(item);
+
+        if (!isCompleted)
+        {
+            item.Completed = item.Completed ? false : true;
+        }
+
+
+
     }
 
     private async void Remove(Item item)

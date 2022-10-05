@@ -35,5 +35,12 @@ namespace ToDoList.Client.Services
 
             return response.IsSuccessStatusCode ? true : false;
         }
+        
+        public async Task<bool> EditAsync(Item item)
+        {
+            var response = await httpClient.PutAsJsonAsync($"api/todo/{item.Id}", item);
+
+            return response.IsSuccessStatusCode ? true : false;
+        }
     }
 }

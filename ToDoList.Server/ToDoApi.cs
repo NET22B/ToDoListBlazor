@@ -65,6 +65,17 @@ namespace ToDoList.Server
 
             return new NoContentResult();
         }
+        
+        [FunctionName("EditItem")]
+        public static async Task<IActionResult> Put(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put",  Route = "todo/{id}")] HttpRequest req,
+            ILogger log, string id)
+        {
+            log.LogInformation("Put item");
+
+
+            return new NoContentResult();
+        }
 
         private static IEnumerable<Item> GetItems()
         {
