@@ -38,7 +38,7 @@ namespace ToDoList.Server
         [FunctionName("CreateTodos")]
         public static async Task<IActionResult> Create(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post",  Route = "todo")] HttpRequest req,
-            [Table("items", Connection = "AzureWebJobsStorage")] IAsyncCollector<ItemTableEntity> itemTable,
+            [Table("items", Connection = "AzureWebJobsStorage")] CloudTable itemTable, // IAsyncCollector<ItemTableEntity> itemTable,
             ILogger log)
         {
             log.LogInformation("Create item");
@@ -51,7 +51,10 @@ namespace ToDoList.Server
 
             var item = new Item { Text = createItem.Text };
 
-            await itemTable.AddAsync(item.ToTableEntity());
+           // await itemTable.AddAsync(item.ToTableEntity());
+
+            var operation = TableOperation.Insert(item.ToTableEntity());
+            var res = await itemTable.ExecuteAsync(operation);
 
             return new OkObjectResult(item);
         } 
@@ -59,11 +62,16 @@ namespace ToDoList.Server
         [FunctionName("Delete")]
         public static async Task<IActionResult> Delete(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete",  Route = "todo/{id}")] HttpRequest req,
+            [Table("items", "Todo", "{id}", Connection = "AzureWebJobsStorage")] ItemTableEntity itemTableToDelete,
+            [Table("items", Connection = "AzureWebJobsStorage")] CloudTable itemTable,
             ILogger log, string id)
         {
             log.LogInformation("Delete item");
 
+            if (itemTableToDelete == null || string.IsNullOrWhiteSpace(itemTableToDelete.Text)) return new BadRequestResult();
 
+            var operation = TableOperation.Delete(itemTableToDelete);
+            await itemTable.ExecuteAsync(operation);
             return new NoContentResult();
         }
         
