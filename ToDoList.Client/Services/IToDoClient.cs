@@ -6,5 +6,6 @@ namespace ToDoList.Client.Services
     {
         Task<IEnumerable<Item>?> GetAsync();
         Task<Item?> PostAsync(CreateItem createItem);
+        Task<bool> RemoveAsync(string id);
     }
 }

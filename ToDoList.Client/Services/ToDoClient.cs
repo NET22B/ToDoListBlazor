@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using ToDoList.Shared;
 
 namespace ToDoList.Client.Services
@@ -26,6 +27,13 @@ namespace ToDoList.Client.Services
                 return await response.Content.ReadFromJsonAsync<Item>();
 
             return null;
+        }
+
+        public async Task<bool> RemoveAsync(string id)
+        {
+            var response = await httpClient.DeleteAsync($"api/todo/{id}");
+
+            return response.IsSuccessStatusCode ? true : false;
         }
     }
 }

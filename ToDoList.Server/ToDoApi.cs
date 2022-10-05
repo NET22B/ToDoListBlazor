@@ -20,7 +20,7 @@ namespace ToDoList.Server
             [HttpTrigger(AuthorizationLevel.Anonymous, "get",  Route = "todo")] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("Get Item");
 
             //string name = req.Query["name"];
 
@@ -42,7 +42,7 @@ namespace ToDoList.Server
             [HttpTrigger(AuthorizationLevel.Anonymous, "post",  Route = "todo")] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("Create item");
 
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -53,6 +53,17 @@ namespace ToDoList.Server
             var item = new Item { Text = createItem.Text };
 
             return new OkObjectResult(item);
+        } 
+        
+        [FunctionName("Delete")]
+        public static async Task<IActionResult> Delete(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete",  Route = "todo/{id}")] HttpRequest req,
+            ILogger log, string id)
+        {
+            log.LogInformation("Delete item");
+
+
+            return new NoContentResult();
         }
 
         private static IEnumerable<Item> GetItems()
