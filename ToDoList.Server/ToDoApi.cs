@@ -70,10 +70,27 @@ namespace ToDoList.Server
         [FunctionName("EditItem")]
         public static async Task<IActionResult> Put(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put",  Route = "todo/{id}")] HttpRequest req,
+            [Table("items", Connection = "AzureWebJobsStorage")] CloudTable itemTable,
             ILogger log, string id)
         {
             log.LogInformation("Put item");
 
+            var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            var itemToUpdate = JsonConvert.DeserializeObject<EditItem>(requestBody);
+
+            if(itemToUpdate is null || string.IsNullOrEmpty(id)) return new BadRequestResult();
+
+            var opertaion = TableOperation.Retrieve<ItemTableEntity>("Todo", id);
+            var found = await itemTable.ExecuteAsync(opertaion);
+
+            if (found.Result == null) return new NotFoundResult();
+
+            var existingItem = found.Result as ItemTableEntity;
+            existingItem.Completed = itemToUpdate.Completed;
+
+            var opertionReplace = TableOperation.Replace(existingItem);
+            await itemTable.ExecuteAsync(opertionReplace);
+            //ToDo check if ok
 
             return new NoContentResult();
         }
