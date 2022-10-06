@@ -14,11 +14,14 @@ using ToDoList.Server.Entitys;
 using ToDoList.Server.Extensions;
 using Microsoft.Azure.Cosmos.Table;
 using System.Linq;
+using Microsoft.Azure.Cosmos.Table.Queryable;
+using Microsoft.Azure.Storage.Blob;
 
 namespace ToDoList.Server
 {
     public static class ToDoApi
     {
+        //Microsoft.azure.webjobs.extensions.storage !!!version 4.0.5!!!
         [FunctionName("GetTodos")]
         public static async Task<IActionResult> Get(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get",  Route = "todo")] HttpRequest req,
@@ -103,6 +106,42 @@ namespace ToDoList.Server
             return new NoContentResult();
         }
 
-      
+        [FunctionName("DeleteCompleted")]
+        public static async Task Run(
+            [TimerTrigger("0 */1 * * * *")] TimerInfo myTimer,
+            [Table("items", Connection = "AzureWebJobsStorage")] CloudTable itemTable,
+            [Queue("deleted", Connection = "AzureWebJobsStorage")] IAsyncCollector<Item> queue,
+             ILogger log)
+        {
+            log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+
+            var query = itemTable.CreateQuery<ItemTableEntity>().Where(i => i.Completed == true).AsTableQuery();
+
+            // var query2 = new TableQuery<ItemTableEntity>().Where(TableQuery.GenerateFilterConditionForBool("Completed", QueryComparisons.Equal, true));
+
+            var result = await itemTable.ExecuteQuerySegmentedAsync(query, null);
+
+            foreach (var item in result)
+            {
+                await queue.AddAsync(item.ToItem());
+                await itemTable.ExecuteAsync(TableOperation.Delete(item));
+            }
+
+        }
+
+        [FunctionName("FromQueue")]
+        public static async Task Run2(
+            [QueueTrigger("deleted", Connection = "AzureWebJobsStorage")] Item myQueueItem,
+            [Blob("done", Connection ="AzureWebJobsStorage")] CloudBlobContainer blobContainer,
+            ILogger log)
+        {
+            log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
+
+            await blobContainer.CreateIfNotExistsAsync();
+            var blob = blobContainer.GetBlockBlobReference($"{myQueueItem.Id}.txt");
+            await blob.UploadTextAsync($"{myQueueItem.Text} is completed");
+        }
+
+
     }
 }
